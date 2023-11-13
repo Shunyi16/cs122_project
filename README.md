@@ -17,3 +17,7 @@ The interface will include two windows, which are for collecting data and analyz
 
 ## Data Analysis and Visualization Plan:
 The analysis results will be displayed as a line graph. The x-axis is the company's name, and the y-axis is the number of job positions those companies are opening. The initial idea is that the ten companies that have the most opening positions will be chosen to display by default. Additional functions include selecting the number of companies depicted or a specific position.
+
+## Project Figma
+![CS122 project figma](https://github.com/Shunyi16/cs122_project/assets/89228953/6239c898-8e24-496b-a7c6-1d8f0ff1b9e7)
+
