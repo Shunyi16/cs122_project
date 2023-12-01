@@ -2,7 +2,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-file = open('linkedin-jobs.csv', 'a')
+file = open('linkedin-jobs.csv', 'w')
 writer = csv.writer(file, lineterminator='\n')
 writer.writerow(['Title', 'Time', 'Company', 'Location', 'Link'])
 
@@ -21,7 +21,7 @@ def linkedin_scraper(webpage, page_number):
         try:
             job_time = job.find('time', class_='job-search-card__listdate')['datetime']
         except:
-            pass
+            job_time = job.find('time', class_='job-search-card__listdate--new')['datetime']
         
         writer.writerow([job_title, job_time, job_company, job_location, job_link])
 
