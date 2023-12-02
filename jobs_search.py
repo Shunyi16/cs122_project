@@ -40,9 +40,4 @@ def new_search(input_position):
     url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=' + position + '&location=United%20States&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start='
     linkedin_scraper(url, 0)
 
-# input_position = input('Enter the position you want to search: ')
-# position = '%20'.join(input_position.split())
-# print(position)
-# url = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=' + position + '&location=United%20States&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start='
-# linkedin_scraper(url, 0)
 
