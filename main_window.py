@@ -4,7 +4,7 @@ from tkinter import ttk
 import jobs_search as js
 from popup import Popup as pp
 import matplotlib.pyplot as plt
-import numpy as np
+import re
 
 # define a class called HeyThere
 class MainPage:
@@ -13,7 +13,7 @@ class MainPage:
     def __init__(self,root):
 
         # add a title to the GUI
-        root.title("Job Market Search")
+        root.title("Search for Jobs")
 
         #define a left_frame for the widgets
         left_frame = ttk.Frame(root, width=260, padding = "3 3 3 3")
@@ -24,11 +24,11 @@ class MainPage:
         # defind buttons to get data and update the pie chart
         search_button = ttk.Button(left_frame, text="Get Data", command=self.popup_window)
         search_button.grid(row=0,column=0)
-        more_button = ttk.Button(left_frame, text="Update Chart", command=self.update_chart)
-        more_button.grid(row=0,column=1)
+        update_button = ttk.Button(left_frame, text="Update Chart", command=self.update_chart)
+        update_button.grid(row=0,column=1)
 
         # defind text area for the summary
-        summary_label = ttk.Label(left_frame, text="Summary:")
+        summary_label = ttk.Label(left_frame, text="Job Search Summary:")
         summary_label.grid(row=3, column=0, pady=(10, 5))
 
         self.summary_text = ttk.Label(left_frame, text=" ", wraplength=250)
@@ -40,18 +40,22 @@ class MainPage:
         self.img = PhotoImage(file='companies.png')
         self.image_label = ttk.Label(right_frame, image=self.img)
         self.image_label.image = self.img
-        self.image_label.grid(row=0, column=1)   
+        self.image_label.grid(row=1, column=1)
+
+
 
     # call the pop up window
     def popup_window(self):
         pp(root)
 
+    # update the pie char
     def update_chart(self):
         self.draw_char()
 
     # update the summary
     def update_summary(self, percentages):
-        summary_info = "Summary of the pie chart:\n"
+        percentages.sort(key=lambda x: x[0].lower())
+        summary_info = "Companies:\n"
 
         for company, percent in percentages:
             summary_info += f"{company}: {percent}%\n"
@@ -59,6 +63,7 @@ class MainPage:
         # Update the summary text label
         self.summary_text.config(text=summary_info)
     
+    # draw the pie chart
     def draw_char(self):
         try:
             with open('linkedin-jobs.csv', 'r') as file:
@@ -69,13 +74,12 @@ class MainPage:
             # create dictionary to store the company and appearing times
             comp_dict = {}
             for line in lines:
-                company = line.split(',')[2].strip()
-                
+                company_name = line.split(',')[2].strip()
+                company = re.sub(r'^[^a-zA-Z]+','',company_name)
                 if company in comp_dict:
                     comp_dict[company] += 1
                 else:
                     comp_dict[company] = 1
-
                 total_count += 1
             
             # calculate the percentage
@@ -83,28 +87,39 @@ class MainPage:
             for company, count in comp_dict.items():
                 percentage = (count / total_count) * 100
                 percentages[company] = round(percentage, 2)
-            
+    
             percentages = sorted(percentages.items(), key=lambda x: x[1], reverse=True)
 
-            #plot the pie char for compmaies
-            plt.figure(figsize=(12, 8))  
+            #plot the pie chart for compmaies
+            plt.figure(figsize=(8,8))  
             companies = list(comp_dict.keys())
             size = list(comp_dict.values())
-            plt.pie(size, labels=companies, startangle=90)
-            plt.axis('equal')
-            plt.savefig('companies.png')
-            self.update_image_label()
+            wedges, texts = plt.pie(size, labels=companies, startangle=90, rotatelabels='true',labeldistance=0.5)
 
+            # reformat the labels
+            for text in texts:
+                label = text.get_text()
+                if len(label) > 30:
+                    text.set_text(label[0:30] + '......')
+
+            plt.axis('equal')
+            plt.title('Companies', loc='left', pad=30)
+            plt.savefig('companies.png')
+
+            self.update_image_label()
             self.update_summary(percentages)
             return percentages
+        
         except FileNotFoundError:
             print("Error: CSV file not found.")
 
+    # update image labes
     def update_image_label(self):
         self.img = PhotoImage(file='companies.png')
         self.image_label.config(image=self.img)
         self.image_label.image = self.img
-        
+
+
 if __name__ == "__main__":
     root = Tk()
     MainPage(root)
